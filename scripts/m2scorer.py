@@ -39,7 +39,7 @@ from util import smart_open
 
 
 
-def load_annotation(gold_file, filter_etype):
+def load_annotation(gold_file, filter_etypes):
     source_sentences = []
     gold_edits = []
     fgold = smart_open(gold_file, 'r')
@@ -63,8 +63,8 @@ def load_annotation(gold_file, filter_etype):
             if etype == 'noop':
                 start_offset = -1
                 end_offset = -1
-	    if filter_etype != "all" and etype.lower() != filter_etype.lower():
-		continue
+	    if "all" not in filter_etypes  and etype.lower() not in [filter_etype.lower() for filter_etype in filter_etypes]:
+	        continue
             corrections =  [c.strip() if c != '-NONE-' else '' for c in fields[2].split('||')]
             # NOTE: start and end are *token* offsets
             original = ' '.join(' '.join(sentence).split()[start_offset:end_offset])
@@ -91,12 +91,12 @@ def print_usage():
     print >> sys.stderr, "  proposed_sentences   -   system output, sentence per line"
     print >> sys.stderr, "  source_gold          -   source sentences with gold token edits"
     print >> sys.stderr, "OPTIONS"
-    print >> sys.stderr, "  -v    --verbose                   -  print verbose output"
-    print >> sys.stderr, "        --very_verbose              -  print lots of verbose output"
-    print >> sys.stderr, "        --max_unchanged_words N     -  Maximum unchanged words when extraction edit. Default 2."
-    print >> sys.stderr, "        --beta B                    -  Beta value for F-measure. Default 0.5."
-    print >> sys.stderr, "        --ignore_whitespace_casing  -  Ignore edits that only affect whitespace and caseing. Default no."
-    print >> sys.stderr, "        --error_type ERROR_TYPE  - Score only for a particular error type, e.g. Wci, ArtOrDet"
+    print >> sys.stderr, "  -v    --verbose                   	-  print verbose output"
+    print >> sys.stderr, "        --very_verbose              	-  print lots of verbose output"
+    print >> sys.stderr, "        --max_unchanged_words N     	-  Maximum unchanged words when extraction edit. Default 2."
+    print >> sys.stderr, "        --beta B                    	-  Beta value for F-measure. Default 0.5."
+    print >> sys.stderr, "        --ignore_whitespace_casing  	-  Ignore edits that only affect whitespace and caseing. Default no."
+    print >> sys.stderr, "        --error_type ERROR_TYPES	-  Score only for particular error types, Use comma-separated values e.g. Wci or Wci,ArtOrDet, or Prep,NN,ArtOrDet or all"
 
 
 max_unchanged_words=2
@@ -104,7 +104,7 @@ beta = 0.5
 ignore_whitespace_casing= False
 verbose = False
 very_verbose = False
-error_type = "all"
+filter_etypes = ["all"]
 opts, args = getopt(sys.argv[1:], "v", ["max_unchanged_words=", "beta=", "verbose", "ignore_whitespace_casing", "very_verbose", "error_type="])
 for o, v in opts:
     if o in ('-v', '--verbose'):
@@ -118,7 +118,7 @@ for o, v in opts:
     elif o == '--ignore_whitespace_casing':
         ignore_whitespace_casing = True
     elif o == '--error_type':
-		error_type = v
+		filter_etypes = v.split(",")
     else:
         print >> sys.stderr, "Unknown option :", o
         print_usage()
@@ -133,7 +133,7 @@ system_file = args[0]
 gold_file = args[1]
 
 # load source sentences and gold edits
-source_sentences, gold_edits = load_annotation(gold_file, error_type)
+source_sentences, gold_edits = load_annotation(gold_file, filter_etypes)
 
 # load system hypotheses
 fin = smart_open(system_file, 'r')
