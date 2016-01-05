@@ -6,9 +6,9 @@
 import scorer.levenshtein
 import argparse
 import sys
-from scripts.reader import load_annotation
-from scripts.util import smart_open
-from scripts.reader import read_nbest_sentences
+from scorer.reader import load_annotation
+from scorer.util import smart_open
+from scorer.reader import read_nbest_sentences
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input_nbest', dest='input_nbest_path', required=True, help="Path to input nbest file")
@@ -47,7 +47,7 @@ for nbest,source,golds_set in zip(nbest_sentences,source_sentences, gold_edits):
 		score = 0.0
 		ann_score = 0.0
 		for annotator, gold in golds_set.iteritems():
-			p,r,  ann_score = scripts.levenshtein.pre_rec_f1(candidate, source, gold,  max_unchanged_words, beta, ignore_whitespace_casing, verbose, very_verbose )
+			p,r,  ann_score = scorer.levenshtein.pre_rec_f1(candidate, source, gold,  max_unchanged_words, beta, ignore_whitespace_casing, verbose, very_verbose )
 			if ann_score >= score:
 				score = ann_score 
 		if c_index == 0:
