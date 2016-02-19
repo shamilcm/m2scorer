@@ -180,7 +180,14 @@ def batch_multi_pre_rec_f1(candidates, sources, gold_edits, max_unchanged_words=
                 print "EDIT SEQ      :", [shrinkEdit(ed) for ed in list(reversed(editSeq))]
                 print "GOLD EDITS    :", gold
                 print "CORRECT EDITS :", correct
-                print "# correct     :", int(stat_correct_local)
+				
+		print "# correct / sentence     :", int(len(correct))
+                print "# proposed / sentence    :", int(len(editSeq))
+                print "# gold / sentence        :", int(len(gold))
+                print "precision / sentence     :", comp_p(len(correct), len(editSeq))
+                print "recall / sentence        :", comp_r(len(correct), len(gold))
+                print "f_%.1f / sentence        :" % beta, comp_f1(len(correct),len(editSeq), len(gold), beta)
+		print "# correct     :", int(stat_correct_local)
                 print "# proposed    :", int(stat_proposed_local)
                 print "# gold        :", int(stat_gold_local)
                 print "precision     :", p_local
