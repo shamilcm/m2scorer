@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
-# Read a moses nbest list and then obtain the oracle F0.5 score
+# Read a  nbest list and then obtain the oracle F0.5 score
+# Format of n-best list should be : 
+#<sentence_index> ||| <hypothesis sentence> ||| <...ignored sections...>
 
 #from scripts import levenshtein
 import scorer.levenshtein
