@@ -8,6 +8,7 @@
 import scorer.levenshtein
 import argparse
 import sys
+import os
 from scorer.reader import load_annotation
 from scorer.util import smart_open
 from scorer.reader import read_nbest_sentences
@@ -17,7 +18,7 @@ parser.add_argument('-i', '--input_nbest', dest='input_nbest_path', required=Tru
 parser.add_argument('-m', '--input_m2file',dest='input_m2_path', required=True, help="Path to input m2 file")
 parser.add_argument('-o', '--output_dir_path', dest='output_dir_path', default=".", help="Path to output directory")
 parser.add_argument('-e', '--error_types', dest='error_types', default='all', help="Comma separated error types" )
-parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',  help="Comma separated error types" )
+parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',  help="For verbose output" )
 args = parser.parse_args()
 
 filter_etypes=args.error_types.split(',')
@@ -72,6 +73,10 @@ for nbest,source,golds_set in zip(nbest_sentences,source_sentences, gold_edits):
 	index += 1
 	system_sentences.append(best_candidate)
 
+
+if not os.path.exists(args.output_dir_path):
+    os.makedirs(args.output_dir_path)
+    
 f=open(args.output_dir_path+'/'+'output_oracle.txt','wb')
 for sentence in system_sentences:
 	f.write(sentence.encode("UTF-8")+'\n')
